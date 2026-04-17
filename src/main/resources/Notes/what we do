@@ -1,23 +1,137 @@
-┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-│    USER     │         │    CART     │         │   PRODUCT   │
-├─────────────┤         ├─────────────┤         ├─────────────┤
-│ id          │◄───────►│ id          │         │ id          │
-│ username    │  1 : 1  │ user_id (FK)│         │ name        │
-│ email       │         │ created_at  │         │ price       │
-│ password    │         │ updated_at  │         │ stock       │
-└─────────────┘         └─────────────┘         └─────────────┘
-       │                      │                         ▲
-       │ 1 : M                │ 1 : M                   │ M : 1
-       ▼                      ▼                         │
-┌─────────────┐         ┌─────────────┐                  │
-│   ADDRESS   │         │  CART_ITEM  │──────────────────┘
-├─────────────┤         ├─────────────┤
-│ id          │         │ id          │
-│ user_id (FK)│         │ cart_id (FK)│
-│ street      │         │ product_id  │
-│ city        │         │ quantity    │
-│ state       │         │ added_at    │
-│ zip_code    │         └─────────────┘
-│ is_default  │
-│ address_type│ (SHIPPING/BILLING)
-└─────────────┘
+    ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+    │                              E-COMMERCE CART MODULE - ERD                                 │
+    └─────────────────────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────────┐         ┌──────────────────────┐         ┌──────────────────┐
+    │      USER        │         │     USER_ADDRESS     │         │    PRODUCT       │
+    ├──────────────────┤         ├──────────────────────┤         ├──────────────────┤
+    │ id (PK)          │◄────────│ id (PK)              │         │ id (PK)          │
+    │ username         │         │ user_id (FK)         │         │ name             │
+    │ email            │         │ street               │         │ description      │
+    │ password         │         │ city                 │         │ price            │
+    │                  │         │ state                │         └──────────────────┘
+    └──────────────────┘         │ zip_code             │                 ▲
+             │                   │ is_default           │                 │
+             │                   │ address_type (ENUM)  │                 │
+             │                   └──────────────────────┘                 │
+             │                                                            │
+             │                   ┌──────────────────────┐                 │
+             │                   │     USER_CART        │                 │
+             │                   ├──────────────────────┤                 │
+             └──────────────────►│ id (PK)              │                 │
+                                 │ user_id (FK) UNIQUE  │                 │
+                                 │ created_at           │                 │
+                                 │ updated_at           │                 │
+                                 └──────────────────────┘                 │
+                                          │                              │
+                                          │                              │
+                                          ▼                              │
+                                 ┌──────────────────────┐                 │
+                                 │   USER_CART_ITEM     │                 │
+                                 ├──────────────────────┤                 │
+                                 │ id (PK)              │                 │
+                                 │ cart_id (FK)         │                 │
+                                 │ product_id (FK)      │─────────────────┘
+                                 │ quantity             │
+                                 │ added_at             │
+                                 └──────────────────────┘
+
+
+
+ Relationships (Cardinality)=>
+
+ParentTable	    Child Table	       Relationship	      Description
+users	      user_addresses	   One-to-Many	      Ek user ke multiple addresses ho sakte hain
+users	      user_cart	           One-to-One	      Ek user ka sirf ek cart hoga
+user_cart	  user_cart_items	   One-to-Many	      Ek cart me multiple items ho sakte hain
+products	  user_cart_items	   One-to-Many	      Ek product multiple carts me ho sakta hai
+
+
+
+
+                        => send data form  postman
+{
+    "username": "ganesh_123",
+    "email": "ganesh@example.com",
+    "password": "securePass@123",
+    "userAddress": [
+        {
+            "street": "123 Main Street",
+            "city": "Mumbai",
+            "state": "Maharashtra",
+            "zip_code": 400001,
+            "isDefault": true,
+            "addressType": "HOME"
+        }
+    ],
+    "userCart": {
+        "userCartItems": [
+            {
+                "quantity": 2,
+                "product": {
+                    "name": "iPhone 15 Pro",
+                    "description": "Apple smartphone 256GB",
+                    "price": 129900.00
+                }
+            },
+            {
+                "quantity": 1,
+                "product": {
+                    "name": "AirPods Pro 2",
+                    "description": "Wireless earbuds with ANC",
+                    "price": 24900.00
+                }
+            }
+        ]
+    }
+}
+
+
+                                => response
+
+{
+    "id": 1,
+    "username": "ganesh_123",
+    "email": "ganesh@example.com",
+    "password": "securePass@123",
+    "userAddress": [
+        {
+            "id": 1,
+            "street": "123 Main Street",
+            "city": "Mumbai",
+            "state": "Maharashtra",
+            "zip_code": 400001,
+            "isDefault": true,
+            "addressType": "HOME"
+        }
+    ],
+    "userCart": {
+        "id": 1,
+        "createdAt": "2026-04-17T15:30:45.123456",
+        "updatedAt": "2026-04-17T15:30:45.123456",
+        "userCartItems": [
+            {
+                "id": 1,
+                "addedAt": "2026-04-17T15:30:45.123456",
+                "quantity": 2,
+                "product": {
+                    "id": 1,
+                    "name": "iPhone 15 Pro",
+                    "description": "Apple smartphone 256GB",
+                    "price": 129900.00
+                }
+            },
+            {
+                "id": 2,
+                "addedAt": "2026-04-17T15:30:45.123456",
+                "quantity": 1,
+                "product": {
+                    "id": 2,
+                    "name": "AirPods Pro 2",
+                    "description": "Wireless earbuds with ANC",
+                    "price": 24900.00
+                }
+            }
+        ]
+    }
+}
