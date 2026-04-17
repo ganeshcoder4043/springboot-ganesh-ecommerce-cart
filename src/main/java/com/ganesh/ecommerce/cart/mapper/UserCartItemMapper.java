@@ -1,13 +1,15 @@
 package com.ganesh.ecommerce.cart.mapper;
 
 import com.ganesh.ecommerce.cart.dto.UserCartItemDTO;
+import com.ganesh.ecommerce.cart.entity.Product;
 import com.ganesh.ecommerce.cart.entity.UserCart;
 import com.ganesh.ecommerce.cart.entity.UserCartItem;
 
 public class UserCartItemMapper {
 
-                       /* Entity to DTO */
     public static UserCartItemDTO toUserCartItemDTO(UserCartItem userCartItem){
+        if (userCartItem == null) return null;
+
         UserCartItemDTO userCartItemDTO = new UserCartItemDTO();
         userCartItemDTO.setId(userCartItem.getId());
         userCartItemDTO.setAddedAt(userCartItem.getAddedAt());
@@ -16,16 +18,29 @@ public class UserCartItemMapper {
         return userCartItemDTO;
     }
 
-
-                          /* DTO to Entity */
     public static UserCartItem toUserCartItemEntity(UserCartItemDTO userCartItemDTO, UserCart userCart){
+        if (userCartItemDTO == null) return null;
+
         UserCartItem userCartItem = new UserCartItem();
+        userCartItem.setId(userCartItemDTO.getId());
         userCartItem.setAddedAt(userCartItemDTO.getAddedAt());
         userCartItem.setQuantity(userCartItemDTO.getQuantity());
-        userCartItem.setId(userCartItemDTO.getId());
+
         if (userCartItemDTO.getProduct() != null) {
             userCartItem.setProduct(ProductMapper.toProductEntity(userCartItemDTO.getProduct()));
         }
+        userCartItem.setUserCart(userCart);
+        return userCartItem;
+    }
+
+    public static UserCartItem toUserCartItemEntity(UserCartItemDTO userCartItemDTO, UserCart userCart, Product product){
+        if (userCartItemDTO == null) return null;
+
+        UserCartItem userCartItem = new UserCartItem();
+        userCartItem.setId(userCartItemDTO.getId());
+        userCartItem.setAddedAt(userCartItemDTO.getAddedAt());
+        userCartItem.setQuantity(userCartItemDTO.getQuantity());
+        userCartItem.setProduct(product);
         userCartItem.setUserCart(userCart);
         return userCartItem;
     }

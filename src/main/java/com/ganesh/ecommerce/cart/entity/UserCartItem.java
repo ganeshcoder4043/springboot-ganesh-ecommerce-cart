@@ -28,7 +28,7 @@ public class UserCartItem {
     private LocalDateTime addedAt;
     private Integer quantity;
 
-    @ManyToOne // Many cart items point to ONE product thats means  Ek Item = Sirf Ek Product Type (lekin quantity 1 se zyada ho sakti hai) and single object
+    @ManyToOne(cascade = CascadeType.PERSIST) // Many cart items point to ONE product thats means  Ek Item = Sirf Ek Product Type (lekin quantity 1 se zyada ho sakti hai) and single object
     @JoinColumn(name = "product_id")
     private Product product;
 }
